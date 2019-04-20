@@ -24,28 +24,6 @@ keyboard = kb_obj.get_background()
 letters_rus = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж', 'З', 'И', 'К', 'Л']
 letters_eng = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S']
 
-def letter(x, y, text):
-    # Keys
-    width = 200
-    height = 200
-    th = 3 # thickness
-    cv2.rectangle(keyboard, (x + th, y + th), (x + width - th, y + height - th), (255, 0, 0), th)
-
-    # Text settings
-    font_letter = cv2.FONT_HERSHEY_PLAIN
-    font_scale = 10
-    font_th = 4
-    text_size = cv2.getTextSize(text, font_letter, font_scale, font_th)[0]
-    width_text, height_text = text_size[0], text_size[1]
-    text_x = int((width - width_text) / 2) + x
-    text_y = int((height + height_text) / 2) + y
-    cv2.putText(keyboard, text, (text_x, text_y), font_letter, font_scale, (255, 0, 0), font_th)
-
-
-# letter(0, 0, "A")
-# letter(200, 0, "B")
-# letter(400, 0, "C")
-
 kb_obj.set_letters(rec_settings, letter_settings, letters_eng)
 kb_obj.set_adjustable_rectangle_with_text(0, 0, 2, 1, 'Ent')
 kb_obj.set_adjustable_rectangle_with_text(6, 0, 2, 1, 'Del')
