@@ -24,7 +24,7 @@ keyboard = kb_obj.get_background()
 letters_rus = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж', 'З', 'И', 'К', 'Л']
 letters_eng = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S']
 
-kb_obj.set_letters(rec_settings, letter_settings, letters_eng)
+kb_obj.set_letters(letters_eng)
 kb_obj.set_adjustable_rectangle_with_text(0, 0, 2, 1, 'Ent')
 kb_obj.set_adjustable_rectangle_with_text(6, 0, 2, 1, 'Del')
 

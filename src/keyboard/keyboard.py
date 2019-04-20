@@ -28,20 +28,15 @@ class KeyboardBasis(object):
             rel_x = order * rectangle.width
             rectangle.show_rectangle(self.get_background(), rel_x, rel_y)
 
-    def set_letters(self, ph_parameters, letter_parameters, letters):
-        max_inline_rectangle_num = self.width // ph_parameters.get('width')
+    def set_letters(self, letters):
+        max_inline_rectangle_num = self.width // self.letter_rectangle_settings.get('width')
         max_lines_num = 2
         letter_counter = 0
         for line_order in range(max_lines_num):
             for order in range(max_inline_rectangle_num):
-                rectangle = TrueRectangle(ph_parameters)
-
-                rel_y = int(self.height / 2) - rectangle.height + rectangle.height * line_order
-                rel_x = order * rectangle.width
-                rectangle.show_rectangle(self.get_background(), rel_x, rel_y)
-
-                letter = Letter(letters[letter_counter], letter_parameters)
-                letter.show_letter(self.get_background(), rectangle, rel_x, rel_y)
+                letter = Letter(letters[letter_counter], self.letter_settings)
+                rectangle = AdjustableRectangle(order, line_order + 2, 1, 1, self.letter_rectangle_settings, letter)
+                rectangle.show_all(self.get_background())
                 letter_counter += 1
 
     def set_adjustable_rectangle(self, column, row, width_in_columns, height_in_rows):
@@ -50,9 +45,9 @@ class KeyboardBasis(object):
         return a_rect
 
     def set_adjustable_rectangle_with_text(self, column, row, width_in_columns, height_in_rows, text):
-        a_rect = self.set_adjustable_rectangle(column, row, width_in_columns, height_in_rows)
         letter = Letter(text, self.func_letter_settings)
-        letter.show_letter(self.get_background(), a_rect, a_rect.x0, a_rect.y0)
+        a_rect = AdjustableRectangle(column, row, width_in_columns, height_in_rows, self.letter_rectangle_settings, letter)
+        a_rect.show_all(self.get_background())
 
 
 class Rectangle(object):
@@ -94,9 +89,16 @@ class Letter(object):
         text_y = int((placeholder.height + self.height_text) / 2) + rel_y
         cv2.putText(source, self.text, (text_x, text_y), self.font_letter, self.font_scale, (255, 0, 0), self.font_thickness)
 
+    def show_letter_in_placeholder(self, source, placeholder):
+        text_x = int((placeholder.width - self.width_text) / 2) + placeholder.x0
+        text_y = int((placeholder.height + self.height_text) / 2) + placeholder.y0
+        cv2.putText(source, self.text, (text_x, text_y), self.font_letter, self.font_scale, (255, 0, 0),
+                    self.font_thickness)
+
+
 
 class AdjustableRectangle(object):
-    def __init__(self, column, row, column_size, row_size, parameters):
+    def __init__(self, column, row, column_size, row_size, parameters, letter):
         self.height = parameters['height']
         self.width = parameters['width']
         self.th = parameters['thickness']
@@ -107,9 +109,24 @@ class AdjustableRectangle(object):
         self.x = self.x0 + self.width * column_size - self.th
         self.y = self.y0 + self.height * row_size - self.th
 
+        self.letter = letter
+
     def show_rectangle(self, source):
         cv2.rectangle(source,
                       (self.x0, self.y0),
                       (self.x, self.y),
                       self.color,
                       self.th)
+
+    def show_letter(self, source):
+        self.letter.show_letter_in_placeholder(source, self)
+
+    def show_all(self, source):
+        self.show_rectangle(source)
+        self.letter.show_letter_in_placeholder(source, self)
+
+    def highlight(self, highlight):
+        if highlight:
+            self.color = (255, 255, 255)
+        else:
+            self.color = (255, 0, 0)
