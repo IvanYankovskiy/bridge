@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 
+
 class KeyboardBasis(object):
     def __init__(self, parameters):
         self.width = parameters['width']
@@ -8,7 +9,7 @@ class KeyboardBasis(object):
         self.un = parameters['un']
         self.keyboard_background = np.zeros((self.height, self.width, self.un), np.uint8)
 
-        self.letter_rectangle_settings = parameters.get('reactangle')
+        self.letter_rectangle_settings = parameters.get('rectangle')
         self.letter_settings = parameters.get('letter')
 
     def get_background(self):
@@ -42,7 +43,11 @@ class KeyboardBasis(object):
                 letter.show_letter(self.get_background(), rectangle, rel_x, rel_y)
                 letter_counter += 1
 
-#we are only interested in related coordinates after drawing
+    def set_adjustable_rectangle(self, column, row, column_size, row_size):
+        a_rect = AdjustableRectangle(column, row, column_size, row_size, self.letter_rectangle_settings)
+        a_rect.show_rectangle(self.get_background())
+
+
 class Rectangle(object):
     def __init__(self, top_left_x, top_left_y, bottom_right_x, bottom_right_y, letter):
         self.top_left_x = top_left_x
@@ -81,3 +86,23 @@ class Letter(object):
         text_x = int((placeholder.width - self.width_text) / 2) + rel_x
         text_y = int((placeholder.height + self.height_text) / 2) + rel_y
         cv2.putText(source, self.text, (text_x, text_y), self.font_letter, self.font_scale, (255, 0, 0), self.font_thickness)
+
+
+class AdjustableRectangle(object):
+    def __init__(self, column, row, column_size, row_size, parameters):
+        self.height = parameters['height']
+        self.width = parameters['width']
+        self.th = parameters['thickness']
+        self.color = parameters['color']
+
+        self.x0 = column * self.width + self.th
+        self.y0 = row * self.height + self.th
+        self.x = self.x0 + self.width * column_size - self.th
+        self.y = self.y0 + self.height * row_size - self.th
+
+    def show_rectangle(self, source):
+        cv2.rectangle(source,
+                      (self.x0, self.y0),
+                      (self.x, self.y),
+                      self.color,
+                      self.th)
