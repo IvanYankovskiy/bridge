@@ -11,6 +11,7 @@ class KeyboardBasis(object):
 
         self.letter_rectangle_settings = parameters.get('rectangle')
         self.letter_settings = parameters.get('letter')
+        self.func_letter_settings = parameters.get('func_letter')
 
     def get_background(self):
         return self.keyboard_background
@@ -43,9 +44,15 @@ class KeyboardBasis(object):
                 letter.show_letter(self.get_background(), rectangle, rel_x, rel_y)
                 letter_counter += 1
 
-    def set_adjustable_rectangle(self, column, row, column_size, row_size):
-        a_rect = AdjustableRectangle(column, row, column_size, row_size, self.letter_rectangle_settings)
+    def set_adjustable_rectangle(self, column, row, width_in_columns, height_in_rows):
+        a_rect = AdjustableRectangle(column, row, width_in_columns, height_in_rows, self.letter_rectangle_settings)
         a_rect.show_rectangle(self.get_background())
+        return a_rect
+
+    def set_adjustable_rectangle_with_text(self, column, row, width_in_columns, height_in_rows, text):
+        a_rect = self.set_adjustable_rectangle(column, row, width_in_columns, height_in_rows)
+        letter = Letter(text, self.func_letter_settings)
+        letter.show_letter(self.get_background(), a_rect, a_rect.x0, a_rect.y0)
 
 
 class Rectangle(object):

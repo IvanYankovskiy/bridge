@@ -12,9 +12,11 @@ width_ratio = 8
 kb_settings = {'width': width_ratio * x, 'height': height_ratio * y, 'un': 3}
 rec_settings = {'height': y, 'width': x, 'thickness': 3, 'color': (255, 0, 0)}
 letter_settings = {'font_scale': 10, 'font_thickness': 4}
+func_letter_settings = {'font_scale': 7, 'font_thickness': 4}
 
 kb_settings['rectangle'] = rec_settings
 kb_settings['letter'] = letter_settings
+kb_settings['func_letter'] = func_letter_settings
 
 kb_obj = kb(kb_settings)
 keyboard = kb_obj.get_background()
@@ -43,8 +45,12 @@ def letter(x, y, text):
 # letter(0, 0, "A")
 # letter(200, 0, "B")
 # letter(400, 0, "C")
-#kb_obj.set_letter_placeholder(rec_settings)
 
 kb_obj.set_letters(rec_settings, letter_settings, letters_eng)
-kb_obj.set_adjustable_rectangle(0, 0, 2, 1)
+kb_obj.set_adjustable_rectangle_with_text(0, 0, 2, 1, 'Ent')
+kb_obj.set_adjustable_rectangle_with_text(6, 0, 2, 1, 'Del')
+
+kb_obj.set_adjustable_rectangle_with_text(0, 5, 2, 1, 'Ent')
+kb_obj.set_adjustable_rectangle_with_text(6, 5, 2, 1, 'Del')
+
 kb_obj.show_keyboard()
