@@ -96,7 +96,6 @@ class Letter(object):
                     self.font_thickness)
 
 
-
 class AdjustableRectangle(object):
     def __init__(self, column, row, column_size, row_size, parameters, letter):
         self.height = parameters['height']

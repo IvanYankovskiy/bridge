@@ -64,11 +64,32 @@ def get_gaze_ratio(eye_points, facial_landmarks):
     right_side_threshold = threshold_eye[0: height, int(width / 2): width]
     right_side_white = cv2.countNonZero(right_side_threshold)
 
-    if left_side_white == 0:
-        gaze_ratio = 5
-    gaze_ratio = left_side_white / right_side_white
+    upper_side_threshold = threshold_eye[0: int(height / 2), 0: width]
+    upper_side_white = cv2.countNonZero(upper_side_threshold)
 
-    return gaze_ratio
+    down_side_threshold = threshold_eye[int(height / 2): height, 0: width]
+    down_side_white = cv2.countNonZero(down_side_threshold)
+
+    if left_side_white == 0:
+        horizontal_gaze_ratio = 1
+    elif right_side_white == 0:
+        horizontal_gaze_ratio = 5
+    else:
+        horizontal_gaze_ratio = left_side_white / right_side_white
+
+    if upper_side_white == 0:
+        vertical_gaze_ratio = 1
+    elif down_side_white == 0:
+        vertical_gaze_ratio = 5
+    else:
+        vertical_gaze_ratio = upper_side_white / down_side_white
+        
+        
+    # cv2.imshow("Down side eye", down_side_threshold)
+    # threshold_txt = 'Downside white ratio %s' % upper_side_white
+    # cv2.putText(frame, str(threshold_txt), (70, 140), font, 2, (0, 0, 255), 3)
+
+    return horizontal_gaze_ratio, vertical_gaze_ratio
 
 while True:
     _, frame = cap.read()
@@ -94,23 +115,35 @@ while True:
 
 
         # Gaze detection
-        gaze_ratio_left_eye = get_gaze_ratio(left_eye_basepoints, landmarks)
-        gaze_ratio_right_eye = get_gaze_ratio(right_eye_basepoints, landmarks)
-        gaze_ratio = (gaze_ratio_right_eye + gaze_ratio_left_eye) / 2
+        horizontal_gaze_ratio_left_eye, vertical_gaze_ratio_left_eye = get_gaze_ratio(left_eye_basepoints, landmarks)
+        horizontal_gaze_ratio_right_eye, vertical_gaze_ratio_right_eye = get_gaze_ratio(right_eye_basepoints, landmarks)
+        horizontal_gaze_ratio = (horizontal_gaze_ratio_right_eye + horizontal_gaze_ratio_left_eye) / 2
+        vertical_gaze_ratio = (vertical_gaze_ratio_right_eye + vertical_gaze_ratio_left_eye) / 2
 
-        view_direction = None
-        if gaze_ratio < 1:
-            view_direction = 'LEFT'
+        horizontal_view_direction = None
+        vertical_view_direction = None
+        if horizontal_gaze_ratio < 0.8:
+            horizontal_view_direction = '''LEFT %s''' % horizontal_gaze_ratio
             new_frame[:] = (0, 0, 255)
-        elif 0.9 < gaze_ratio < 1.2:
-            view_direction = 'CENTER'
+        elif 0.9 < horizontal_gaze_ratio < 1.2:
+            horizontal_view_direction = '''CENTER %s''' % horizontal_gaze_ratio
         else:
             new_frame[:] = (255, 0, 0)
-            view_direction = 'RIGHT'
+            horizontal_view_direction = '''RIGHT %s''' % horizontal_gaze_ratio
+
+        if vertical_gaze_ratio < 1.35:
+            vertical_view_direction = '''DOWN %s''' % vertical_gaze_ratio
+            new_frame[:] = (0, 0, 255)
+        elif 1.4 < vertical_gaze_ratio < 1.65:
+            vertical_view_direction = '''CENTER %s''' % vertical_gaze_ratio
+        else:
+            new_frame[:] = (255, 0, 0)
+            vertical_view_direction = '''UP %s''' % vertical_gaze_ratio
 
         #showing direction
 
-        cv2.putText(frame, str(view_direction), (50, 100), font, 2, (0, 0, 255), 3)
+        cv2.putText(frame, str(horizontal_view_direction), (50, 100), font, 2, (0, 0, 255), 3)
+        cv2.putText(frame, str(vertical_view_direction), (50, 190), font, 2, (0, 0, 255), 3)
 
 
 
